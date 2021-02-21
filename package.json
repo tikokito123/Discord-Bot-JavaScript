@@ -1,0 +1,22 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "description": "Discord Bot JavaScript",
+  "main": "Bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tikokito123/Discord-Bot-JavaScript.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tikokito123/Discord-Bot-JavaScript/issues"
+  },
+  "homepage": "https://github.com/tikokito123/Discord-Bot-JavaScript#readme",
+  "dependencies": {
+    "discord.js": "^12.5.1"
+  }
+}

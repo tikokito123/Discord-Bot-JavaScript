@@ -5,7 +5,9 @@ const replies = [ 'Hello world', 'Nice to meet you guys', 'I Speak English very 
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-client.login('ODEyOTE1MzU4ODQ3MDc0MzA0.YDHsbA.6HlFc8qVX_qkzkT5raPIOc7t4Zg');
+require('dotenv').config();
+
+client.login(process.env.TOKEN);
 client.on('message', GotMessage);
 
 function GotMessage(msg)

@@ -1,21 +1,37 @@
 
 //vars
 const replies = [ 'Hello world', 'Nice to meet you guys', 'I Speak English very very', 'I am working'] 
-
+const fs = require('fs');
 const Discord = require('discord.js');
+const { prefix, token } = require('./config.json');
+
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+client.login(token);
 
-require('dotenv').config();
-
-client.login(process.env.TOKEN);
-client.on('message', GotMessage);
-
-function GotMessage(msg)
+const commandFiles = fs.readdirSync('./Commands').filter(file => file.endsWith('.js'));
+for(const file of commandFiles)
 {
-    console.log(msg.content);
-    if(msg.channel.id == '812914720788447255' && msg.content === 'Ping')
-    {
-        const r = Math.floor(Math.random() * replies.length);
-        msg.reply(replies[r]);
-    }
+    const command = require(`./Commands/${file}`);
+    client.commands.set(command.name, command);
 }
+
+client.on('message', message =>
+{
+    if (!message.content === message.content.startsWith(prefix)) return;
+
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const command = args.shift().toLowerCase();
+    
+    if(!client.commands.has(command)) return;
+
+    try
+    {
+        client.commands.get(command).execute(message, args);
+    }
+    catch(error)
+    {
+        console.error(error);
+        message.reply('There was an error, please try again');
+    }
+});

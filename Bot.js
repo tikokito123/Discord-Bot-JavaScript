@@ -8,8 +8,12 @@ const client = new Discord.Client();
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
 const commandFolders = fs.readdirSync('./Commands');
+//login to discord
+client.on('ready', () => console.log('On'));
+
 client.login(token);
 
+//Looking for the particular folder with the command name that the user has been given...
 for (const folder of commandFolders) 
 {
 	const commandFiles = fs.readdirSync(`./Commands/${folder}`).filter(file => file.endsWith('.js'));
@@ -22,26 +26,31 @@ for (const folder of commandFolders)
 
 client.on('message', message =>
 {
+    //check if the user wants to contact with the bot...
     if (!message.content === message.content.startsWith(prefix)) return;
     
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
     
-    if(!client.commands.has(commandName)) return;
     
-    const command = client.commands.get(commandName);
-    
+    const command = client.commands.get(commandName) || 
+    client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+    //if there is no such command then return
+    if(!command) return;
+
+    //check if the command can run only on the server/if not return with a message 
     if (command.guildOnly && message.channel.type === 'dm') {
         return message.reply('I can\'t execute that command inside DMs!');
     }
-
+    
+    //Cooldowns
     if(!cooldowns.has(command.name))
         cooldowns.set(command.name, new Discord.Collection());
 
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
     const cooldownAmount = (command.cooldown || 3) * 1000;
-
 
     if(timestamps.has(message.author.id))
     {

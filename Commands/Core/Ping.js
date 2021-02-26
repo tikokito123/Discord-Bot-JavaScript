@@ -5,8 +5,8 @@ module.exports = {
 	description: 'Pong!',
 	aliases: ['p', 't'],
 	cooldown: 2,
-	execute(message, args) {
+	async execute(message, args) {
         const r = Math.floor(Math.random() * replies.length);
-		message.channel.send(replies[r]);
+		await message.channel.send(replies[r]);
 	},
 };

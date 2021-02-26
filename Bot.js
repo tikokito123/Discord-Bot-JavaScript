@@ -27,7 +27,7 @@ for (const folder of commandFolders)
 client.on('message', message =>
 {
     //check if the user wants to contact with the bot...
-    if (!message.content === message.content.startsWith(prefix)) return;
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
     
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
@@ -67,7 +67,7 @@ client.on('message', message =>
 
     try
     {
-        command.execute(message, args);
+        command.execute(message, args, Discord);
     }
     catch(error)
     {

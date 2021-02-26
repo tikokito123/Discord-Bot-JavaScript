@@ -24,6 +24,14 @@ for (const folder of commandFolders)
 	}
 }
 
+client.on('guildMemberAdd', guildMember =>
+{
+    let welcomeRole = guildMember.guild.roles.cache.find(role => role.name === 'Good Guy');
+    guildMember.roles.add(welcomeRole);
+    guildMember.guild.channels.cache.get('497900056972754990').send(`Welcome <@${guildMember.user.id}> to our server.`);
+});
+
+
 client.on('message', message =>
 {
     //check if the user wants to contact with the bot...

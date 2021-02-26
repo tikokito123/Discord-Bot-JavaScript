@@ -1,10 +1,12 @@
+const Embed = require("../Core/Embed");
+
 module.exports = {
 	name: 'kick',
 	aliases: ['k'],
 	description: 'kick the player want to kick, if you want him to return then use the comeback kick',
 	guildOnly: true,
 	cooldown: 2,
-	execute(message, args) {
+	execute(message, args, Discord) {
 		if(!message.guild.roles.cache.find(role => role.id === '497923786805346304'))return;
 
 		const user = message.mentions.users.first();
@@ -22,8 +24,15 @@ module.exports = {
 					console.error('could not send the reply', error);
 				})
 			}
+			const newEmbed = new Discord.MessageEmbed()
+			.setColor('#FFFF00')
+			.setTitle('Kicked')
+			.setDescription(`${user} has been kicked!`)
+			.setURL('https://www.youtube.com/watch?v=dTJFtCG2-xA')
+			.setThumbnail('https://e7.pngegg.com/pngimages/188/405/png-clipart-human-s-middle-finger-emoji-domain-middle-finger-the-finger-emoji-hand-thumb-signal.png')
+			.setFooter('The user can return when he get kicked!');
 			target.kick();
-			message.channel.send(`${user} has been kicked`);
+			message.channel.send(newEmbed);
 		}
 		else{
 			message.channel.send('You cannot kick that member');

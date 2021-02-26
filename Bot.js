@@ -4,7 +4,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 
-const client = new Discord.Client();
+const client = new Discord.Client({partials: ['MESSAGE', 'CHANNEL', 'REACTION']});
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
 const commandFolders = fs.readdirSync('./Commands');
@@ -75,7 +75,7 @@ client.on('message', message =>
 
     try
     {
-        command.execute(message, args, Discord);
+        command.execute(message, args, Discord, client);
     }
     catch(error)
     {

@@ -3,7 +3,7 @@ module.exports = {
 	aliases: ['b'],
 	description: 'Ban the user',
 	guildOnly: true,
-	cooldown: 0.5,
+	cooldown: 1000,
 	execute(message, args, Discord) {
 		if(!message.guild.roles.cache.find(role => role.id === '497923786805346304'))return;
 

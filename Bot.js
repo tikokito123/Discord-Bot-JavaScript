@@ -26,13 +26,26 @@ for (const folder of commandFolders)
 
 client.on('guildMemberAdd', guildMember =>
 {
+    const channel = guildMember.guild.channels.cache.find(channel => channel.rawPosition === 1);
     let welcomeRole = guildMember.guild.roles.cache.find(role => role.name === 'Los Haters!');
         guildMember.roles.add(welcomeRole).then(() => {
             console.log('success');
         }).catch(error => {
             console.error('shit\n', error);
+        }).finally(() => {
+            channel.send(`Sorry, There is no role`);
         });
-    guildMember.guild.channels.cache.find(channel => channel.name === 'welcome').send(`Welcome <@${guildMember.user.id}> to our server.`);
+    const welcomeChannel = guildMember.guild.channels.cache.find(channel => channel.name === 'welcome'); 
+    const welcome = `Welcome <@${guildMember.user.id}> to our server.`;
+        if(welcomeChannel){
+            welcomeChannel.send(welcome);
+        }
+        else
+        {
+            
+            channel.send(welcome);
+        }
+    
 });
 
 

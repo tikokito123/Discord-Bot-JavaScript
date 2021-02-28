@@ -3,24 +3,29 @@ module.exports = {
     description: 'setup a reaction role message',
     aliases: ['rr', 'roles'],
     async execute(message, args, Discord, client){
-        const channel = '814864797698490411';
-        const fromTheHoodRole = message.guild.roles.cache.find(role => role.name === 'Stupid Role');
-        const fromTheStreetsRole = message.guild.roles.cache.find(role => role.name === 'Another Supid Role');
+        const channel = '815250249001074689';        
+        const fromTheShabesRole = message.guild.roles.cache.find(role => role.name === '✡️חרדיאלים✡️');
+        const fromTheStreetsRole = message.guild.roles.cache.find(role => role.name === 'מהשכונה');
+        const happyGregRole = message.guild.roles.cache.find(role => role.name === 'HappyGregory');
         
-        const hoodEmoji = '🍋';
-        const streetEmoji = '🍇';
+        const dosiEmoji = '✡️';
+        const streetEmoji = '🖕';
+        const happyGreg = '😬';
 
         const newEmbed = new Discord.MessageEmbed()
         .setColor('#e42643')
-        .setTitle('Choose a gang')
+        .setTitle('CHOOSE A GANG')
         .setDescription('Choosing a gang will allow you to interact with the gang \n\n'
-        + `${hoodEmoji} For the hood\n`
-        + `${streetEmoji} For the streets` 
+        + `${dosiEmoji} If you are ✡️חרדיאלים✡️\n\n`
+        + `${streetEmoji} If you are from the streets\n\n`
+        + `${happyGreg} If you are a happyGreg dude` 
         );
-
-        let messageEmbed = await message.channel.send(newEmbed);
-        messageEmbed.react(hoodEmoji);
-        messageEmbed.react(streetEmoji);
+        if(message.channel.id === channel){
+            let messageEmbed = await message.channel.send(newEmbed);
+            messageEmbed.react(dosiEmoji);
+            messageEmbed.react(streetEmoji);
+            messageEmbed.react(happyGreg);
+        }
 
         client.on('messageReactionAdd', async (reaction, user) => 
         {
@@ -28,16 +33,21 @@ module.exports = {
             if(reaction.partial) await reaction.fetch();
             if(user.bot) return;
             if(!reaction.message.guild) return;
-
-            if(reaction.message.channel.id == channel){
-                if(reaction.emoji.name === hoodEmoji){
-                    await reaction.message.guild.members.cache.get(user.id).roles.add(fromTheHoodRole);
+            
+   
+            if(message.channel.id == channel){
+                if(reaction.emoji.name === dosiEmoji){
+                    await reaction.message.guild.members.cache.get(user.id).roles.add(fromTheShabesRole);
                 }
                 if(reaction.emoji.name === streetEmoji){
                     await reaction.message.guild.members.cache.get(user.id).roles.add(fromTheStreetsRole);
                 }
+                if(reaction.emoji.name === happyGreg){
+                    await reaction.message.guild.members.cache.get(user.id).roles.add(happyGregRole);
+                }
             }
             else{
+                await message.channel.send('This command works only under channel name roles!');
                 return;
             }
 
@@ -49,18 +59,22 @@ module.exports = {
             if(user.bot) return;
             if(!reaction.message.guild) return;
 
-            if(reaction.message.channel.id == channel){
-                if(reaction.emoji.name === hoodEmoji){
-                    await reaction.message.guild.members.cache.get(user.id).roles.remove(fromTheHoodRole);
+            if(message.channel.id == channel)
+            {
+                if(reaction.emoji.name === dosiEmoji){
+                    await reaction.message.guild.members.cache.get(user.id).roles.remove(fromTheShabesRole);
                 }
                 if(reaction.emoji.name === streetEmoji){
                     await reaction.message.guild.members.cache.get(user.id).roles.remove(fromTheStreetsRole);
                 }
+                if(reaction.emoji.name === happyGreg){
+                    await reaction.message.guild.members.cache.get(user.id).roles.remove(happyGregRole);
+                }
             }
-            else{
+            else
+            {
                 return;
             }
-            
-        });
+        });        
     }
 }

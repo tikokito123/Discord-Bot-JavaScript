@@ -7,7 +7,11 @@ module.exports = {
 	guildOnly: true,
 	cooldown: 2,
 	execute(message, args, Discord) {
-		if(!message.guild.roles.cache.find(role => role.id === '497923786805346304'))return;
+		if(!message.member.hasPermission('ADMINISTRATOR', 'KICK_MEMBERS')) 
+		{
+			message.reply('You Don\'t have the Permission to kick!');
+			return;
+		};
 
 		const user = message.mentions.users.first();
 		if(user){
@@ -22,7 +26,7 @@ module.exports = {
 					console.log('replied');
 				}).catch(error => {
 					console.error('could not send the reply', error);
-				})
+				});
 			}
 			const newEmbed = new Discord.MessageEmbed()
 			.setColor('#FFFF00')

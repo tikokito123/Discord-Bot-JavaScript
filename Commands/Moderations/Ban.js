@@ -5,7 +5,10 @@ module.exports = {
 	guildOnly: true,
 	cooldown: 1000,
 	execute(message, args, Discord) {
-		if(!message.guild.roles.cache.find(role => role.id === '497923786805346304'))return;
+		if(!message.member.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) {
+			message.reply('You Don\'t have the Permission to Ban!!!');
+			return;
+		};
 
 		const user = message.mentions.users.first();
 		if(user)

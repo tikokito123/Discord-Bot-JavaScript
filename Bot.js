@@ -26,9 +26,13 @@ for (const folder of commandFolders)
 
 client.on('guildMemberAdd', guildMember =>
 {
-    let welcomeRole = guildMember.guild.roles.cache.find(role => role.name === 'Good Guy');
-    guildMember.roles.add(welcomeRole);
-    guildMember.guild.channels.cache.get('497900056972754990').send(`Welcome <@${guildMember.user.id}> to our server.`);
+    let welcomeRole = guildMember.guild.roles.cache.find(role => role.name === 'Los Haters!');
+        guildMember.roles.add(welcomeRole).then(() => {
+            console.log('success');
+        }).catch(error => {
+            console.error('shit\n', error);
+        });
+    guildMember.guild.channels.cache.find(channel => channel.name === 'welcome').send(`Welcome <@${guildMember.user.id}> to our server.`);
 });
 
 

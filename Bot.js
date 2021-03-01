@@ -32,8 +32,6 @@ client.on('guildMemberAdd', guildMember =>
             console.log('success');
         }).catch(error => {
             console.error('shit\n', error);
-        }).finally(() => {
-            channel.send(`Sorry, There is no role`);
         });
     const welcomeChannel = guildMember.guild.channels.cache.find(channel => channel.name === 'welcome'); 
     const welcome = `Welcome <@${guildMember.user.id}> to our server.`;
@@ -92,7 +90,7 @@ client.on('message', message =>
 
     try
     {
-        command.execute(message, args, Discord, client);
+        command.execute(message, args,commandName, client, Discord);
     }
     catch(error)
     {

@@ -1,6 +1,9 @@
 const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
 
+const Discord = require('discord.js');
+
+
 const queue = new Map();
 
 module.exports =
@@ -8,7 +11,7 @@ module.exports =
     name: 'play',
     aliases: ['skip', 'stop'],
     description: 'Play some Music, A music Bot :) ',
-    async execute(message, args, cmd, client, Discord){
+    async execute(message, args,client, cmd){
         const voiceChannel = message.member.voice.channel;
 
         if(!voiceChannel) return message.channel.send('You need to be in the voice channel to play some music');
@@ -81,7 +84,7 @@ module.exports =
             .setThumbnail('https://nashvilleampexpo.com/wp-content/uploads/2020/08/The-20-Best-Royalty-Free-Music-Sites-in-2018.png')
             .setFooter('Hope It\'s Katatonia 😬');
             
-            return message.channel.send(songEmbed);
+            return await message.channel.send(songEmbed);
             }
         }
         else if(cmd === 'skip') SkipSong(message, serverQueue);
@@ -94,8 +97,8 @@ const videoPlayer = async (guild, song) => {
     const songQueue = queue.get(guild.id);
     
     if(!song){
-        songQueue.textChannel.send('The party has been stopped 😒, IM OUT FROM HERE 😠');
-        songQueue.voiceChannel.leave();
+        await songQueue.textChannel.send('The party has been stopped 😒, IM OUT FROM HERE 😠');
+        await songQueue.voiceChannel.leave();
         queue.delete(guild.id);
         return;        
     }

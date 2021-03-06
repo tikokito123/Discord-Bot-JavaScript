@@ -1,4 +1,6 @@
 const Embed = require("../Core/Embed");
+const Discord = require('discord.js');
+
 
 module.exports = {
 	name: 'kick',
@@ -6,7 +8,7 @@ module.exports = {
 	description: 'kick the player want to kick, if you want him to return then use the comeback kick',
 	guildOnly: true,
 	cooldown: 2,
-	execute(message, args, Discord) {
+	execute(message, args) {
 		if(!message.member.hasPermission('ADMINISTRATOR', 'KICK_MEMBERS')) 
 		{
 			message.reply('You Don\'t have the Permission to kick!');

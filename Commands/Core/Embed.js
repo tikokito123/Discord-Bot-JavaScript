@@ -1,10 +1,12 @@
+const Discord = require('discord.js');
+
 const { name } = require("./Help")
 
 module.exports = {
     name: 'display',
     description: 'Embeds!',
     aliases: ['e', 'd'],
-    execute(message, args, Discord){
+    execute(message, args){
         const newEmbed = new Discord.MessageEmbed()
         .setColor('#ff9966')
         .setTitle('Welcome :)')

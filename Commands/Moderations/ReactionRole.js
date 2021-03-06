@@ -1,9 +1,12 @@
+const Discord = require('discord.js');
+
 module.exports = {
     name: 'reactionRole',
     description: 'setup a reaction role message',
     aliases: ['rr', 'roles'],
-    async execute(message, args, Discord, client){
-        const channel = '815250249001074689';        
+    async execute(message, args, client){
+        console.log('reaction calls');
+        const channel = message.guild.channels.cache.find(cnl => cnl.name === 'roles');        
         const fromTheShabesRole = message.guild.roles.cache.find(role => role.name === '✡️חרדיאלים✡️');
         const fromTheStreetsRole = message.guild.roles.cache.find(role => role.name === 'מהשכונה');
         const happyGregRole = message.guild.roles.cache.find(role => role.name === 'HappyGregory');
@@ -20,22 +23,23 @@ module.exports = {
         + `${streetEmoji} If you are from the streets\n\n`
         + `${happyGreg} If you are a happyGreg dude` 
         );
-        if(message.channel.id === channel){
+        if(message.channel.name === channel){
             let messageEmbed = await message.channel.send(newEmbed);
-            messageEmbed.react(dosiEmoji);
-            messageEmbed.react(streetEmoji);
-            messageEmbed.react(happyGreg);
+            await messageEmbed.react(dosiEmoji);
+            await messageEmbed.react(streetEmoji);
+            await messageEmbed.react(happyGreg);
         }
 
-        client.on('messageReactionAdd', async (reaction, user) => 
+        client.on('MessageReactionAdd', async (reaction, user) => 
         {
+            console.log('messagereactionAdd');
             if(reaction.message.partial) await reaction.message.fetch();
             if(reaction.partial) await reaction.fetch();
             if(user.bot) return;
             if(!reaction.message.guild) return;
             
    
-            if(message.channel.id == channel){
+            if(message.channel.name == channel){
                 if(reaction.emoji.name === dosiEmoji){
                     await reaction.message.guild.members.cache.get(user.id).roles.add(fromTheShabesRole);
                 }

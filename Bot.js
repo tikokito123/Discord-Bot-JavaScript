@@ -24,6 +24,41 @@ for (const folder of commandFolders)
 	}
 }
 
+client.on('guildCreate', guild => 
+{
+    if(!guild.available) return;
+    
+    let isMessageSent = false;
+    
+    const IntroEmbed = new Discord.MessageEmbed()
+    .setAuthor('Tikokito', 'https://cdnb.artstation.com/p/assets/images/images/011/592/433/large/joshua-losier-sleep-token.jpg?1530368240')
+    .setColor('')
+    .setThumbnail('https://goldwallpapers.com/uploads/posts/gangster-spongebob-wallpaper/gangster_spongebob_wallpaper_007.jpg')
+    .setTimestamp()
+    .setTitle('TikoBot is HERE!! 😎')
+    .setURL('https://discord.com/oauth2/authorize?client_id=812915358847074304&permissions=8&scope=bot')
+    .setDescription('So, What I can do?')
+    .addFields({name: `My prefix: ${prefix}`, value: `Use ${prefix} when you want to call me`},
+    {name: `🎸Play Some Music🎶`, value: `Play your favorite songs with TikoBot`},
+    {name: '🤣Say Funny jokes🤣', value: `Wanna laugth`},
+    {name: '🖕Kick🖕', value: `You know there is an easter egg in the kick command 🤫`},
+    {name: '🖕Ban🖕', value: 'Suggestion: If there is someone names Meliodas in your server'},
+    {name: '🔴Do some Reaction roles🔴', value: `Choose the role you like`},
+    {name: 'clear your channels 💪', value: `clear your text channel`},
+    ).addField(`For the commands list type ${prefix}help`, `Help! Help!!`)
+    .setFooter('Invite me to your server');
+
+
+    guild.channels.cache.forEach(channel => {
+        if(channel.guild.me.hasPermission('SEND_MESSAGES') && !isMessageSent){
+            if(!channel.isText()) return;
+            channel.send(IntroEmbed);
+            isMessageSent= true;
+            
+        }
+    });
+});
+
 client.on('guildMemberAdd', guildMember =>
 {
     const channel = guildMember.guild.channels.cache.find(channel => channel.rawPosition === 1);
@@ -40,7 +75,6 @@ client.on('guildMemberAdd', guildMember =>
         }
         else
         {
-            
             channel.send(welcome);
         }
     
@@ -90,7 +124,7 @@ client.on('message', message =>
 
     try
     {
-        command.execute(message, args,commandName, client, Discord);
+        command.execute(message, args, client, commandName);
     }
     catch(error)
     {

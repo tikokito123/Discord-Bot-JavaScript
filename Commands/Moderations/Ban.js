@@ -1,10 +1,13 @@
+const Discord = require('discord.js');
+
+
 module.exports = {
 	name: 'ban',
 	aliases: ['b'],
 	description: 'Ban the user',
 	guildOnly: true,
 	cooldown: 1000,
-	execute(message, args, Discord) {
+	execute(message, args) {
 		if(!message.member.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) {
 			message.reply('You Don\'t have the Permission to Ban!!!');
 			return;

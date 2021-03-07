@@ -7,7 +7,7 @@ module.exports = {
 	aliases: ['k'],
 	description: 'kick the player want to kick, if you want him to return then use the comeback kick',
 	guildOnly: true,
-	cooldown: 2,
+	cooldown: 0.5,
 	execute(message, args) {
 		if(!message.member.hasPermission('ADMINISTRATOR', 'KICK_MEMBERS')) 
 		{

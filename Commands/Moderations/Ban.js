@@ -6,7 +6,7 @@ module.exports = {
 	aliases: ['b'],
 	description: 'Ban the user',
 	guildOnly: true,
-	cooldown: 1000,
+	cooldown: 0.5,
 	execute(message, args) {
 		if(!message.member.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) {
 			message.reply('You Don\'t have the Permission to Ban!!!');
@@ -39,7 +39,7 @@ module.exports = {
 			message.channel.send(newEmbed);
 		}
 		else{
-			message.channel.send('You cannot ban that member');
+			message.reply('You cannot ban that member. It is not my fault, Use a fucking @member smh');
 		}
 	},
 };

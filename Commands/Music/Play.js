@@ -11,6 +11,7 @@ module.exports =
     name: 'play',
     aliases: ['skip', 'stop'],
     description: 'Play some Music, A music Bot :) ',
+    cooldown: 0.5,
     async execute(message, args,client, cmd){
         
         const voiceChannel = message.member.voice.channel;
@@ -88,7 +89,7 @@ module.exports =
             return await message.channel.send(songEmbed);
             }
         }
-        else if(cmd === 'skip') SkipSong(message, serverQueue);
+        else if(cmd === 'skip') SkipSong(message, serverQueue, message.guild, serverQueue.songs[0]);
         else if(cmd === 'stop') StopSong(message, serverQueue);
     }
 
@@ -117,17 +118,28 @@ const videoPlayer = async (guild, song) => {
     await songQueue.textChannel.send(`🎸🎵 Now playing **${song.title}** 🎸🎵`);
 }
 
-const SkipSong = (message, serverQueue) => {
+const SkipSong = (message, serverQueue, guild, song) => {
     if(!message.member.voice.channel) return message.channel.send('You need to be in the Channel to execute this command');
     if(!serverQueue) return message.channel.send('There are no song in the queue');
 
-        
-    serverQueue.connection.dispatcher.destroy();
+    try
+    {
+        serverQueue.connection.dispatcher.destroy();
+        videoPlayer(guild, song)
+    }
+    catch(err){
+        console.error(err, 'could not skip');
+    }    
 }
 
 const StopSong = (message, serverQueue) => {
     if(!message.member.voice.channel) return message.channel.send('You need to be in the Channel to execute this command');
+    try{
 
-    serverQueue.songs = [];
-    serverQueue.connection.dispatcher.destroy();
+        serverQueue.connection.dispatcher.destroy();
+        serverQueue.songs = [];
+    }
+    catch(err) {
+        console.error(err, 'already typed destroyed!');
+    }
 }

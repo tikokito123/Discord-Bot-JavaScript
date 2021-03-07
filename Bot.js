@@ -32,7 +32,7 @@ client.on('guildCreate', guild =>
     
     const IntroEmbed = new Discord.MessageEmbed()
     .setAuthor('Tikokito', 'https://cdnb.artstation.com/p/assets/images/images/011/592/433/large/joshua-losier-sleep-token.jpg?1530368240')
-    .setColor('')
+    .setColor('#34d80f')
     .setThumbnail('https://goldwallpapers.com/uploads/posts/gangster-spongebob-wallpaper/gangster_spongebob_wallpaper_007.jpg')
     .setTimestamp()
     .setTitle('TikoBot is HERE!! 😎')
@@ -52,9 +52,9 @@ client.on('guildCreate', guild =>
     guild.channels.cache.forEach(channel => {
         if(channel.guild.me.hasPermission('SEND_MESSAGES') && !isMessageSent){
             if(!channel.isText()) return;
-            channel.send(IntroEmbed);
+            channel.send(IntroEmbed).then(console.log('sent!'))
+            .catch(console.log('There was no Text channel || something with a permission!'));
             isMessageSent= true;
-            
         }
     });
 });

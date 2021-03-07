@@ -7,11 +7,12 @@ const Discord = require('discord.js');
 const queue = new Map();
 
 module.exports =
-    {
+{
     name: 'play',
     aliases: ['skip', 'stop'],
     description: 'Play some Music, A music Bot :) ',
     async execute(message, args,client, cmd){
+        
         const voiceChannel = message.member.voice.channel;
 
         if(!voiceChannel) return message.channel.send('You need to be in the voice channel to play some music');
@@ -94,10 +95,13 @@ module.exports =
 }
 
 const videoPlayer = async (guild, song) => {
-    const songQueue = queue.get(guild.id);
+    const byeEmbed = new Discord.MessageEmbed()
+        .setColor('#000000')
+        .setTitle('The party has been stopped 😒, IM OUT FROM HERE 😠');
     
+    const songQueue = queue.get(guild.id);
     if(!song){
-        await songQueue.textChannel.send('The party has been stopped 😒, IM OUT FROM HERE 😠');
+        await songQueue.textChannel.send(byeEmbed);
         await songQueue.voiceChannel.leave();
         queue.delete(guild.id);
         return;        

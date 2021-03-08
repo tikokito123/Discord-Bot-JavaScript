@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['rr', 'roles'],
     async execute(message, args, client){
         console.log('reaction calls');
-        const channel = message.guild.channels.cache.find(cnl => cnl.name === 'roles');        
+        const channel = message.guild.channels.cache.get('815250249001074689');        
         const fromTheShabesRole = message.guild.roles.cache.find(role => role.name === '✡️חרדיאלים✡️');
         const fromTheStreetsRole = message.guild.roles.cache.find(role => role.name === 'מהשכונה');
         const happyGregRole = message.guild.roles.cache.find(role => role.name === 'HappyGregory');
@@ -14,7 +14,7 @@ module.exports = {
         const dosiEmoji = '✡️';
         const streetEmoji = '🖕';
         const happyGreg = '😬';
-
+        
         const newEmbed = new Discord.MessageEmbed()
         .setColor('#e42643')
         .setTitle('CHOOSE A GANG')
@@ -23,11 +23,12 @@ module.exports = {
         + `${streetEmoji} If you are from the streets\n\n`
         + `${happyGreg} If you are a happyGreg dude` 
         );
-        if(message.channel.name === channel){
+        if(message.channel.id == channel){
+            console.log('here');
             let messageEmbed = await message.channel.send(newEmbed);
-            await messageEmbed.react(dosiEmoji);
-            await messageEmbed.react(streetEmoji);
-            await messageEmbed.react(happyGreg);
+            messageEmbed.react(dosiEmoji);
+            messageEmbed.react(streetEmoji);
+            messageEmbed.react(happyGreg);
         }
 
         client.on('MessageReactionAdd', async (reaction, user) => 

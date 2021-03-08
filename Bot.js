@@ -61,7 +61,7 @@ client.on('guildCreate', guild =>
 
 client.on('guildMemberAdd', guildMember =>
 {
-    const channel = guildMember.guild.channels.cache.find(channel => channel.rawPosition === 1);
+    let isMessageSent = false;
     let welcomeRole = guildMember.guild.roles.cache.find(role => role.name === 'Los Haters!');
         guildMember.roles.add(welcomeRole).then(() => {
             console.log('success');
@@ -69,13 +69,19 @@ client.on('guildMemberAdd', guildMember =>
             console.error('shit\n', error);
         });
     const welcomeChannel = guildMember.guild.channels.cache.find(channel => channel.name === 'welcome'); 
-    const welcome = `Welcome <@${guildMember.user.id}> to our server.`;
+    const welcome = new Discord.MessageEmbed().setTitle(`Welcome <@${guildMember.user.id}> to our server.`).setTimestamp().setColor('#00ecff');
         if(welcomeChannel){
             welcomeChannel.send(welcome);
         }
         else
         {
-            channel.send(welcome);
+            guildMember.guild.channels.cache.forEach(channel =>
+                {
+                    if(channel.guild.me.hasPermission('SEND_MESSAGES') && !isMessageSent && channel.isText()){
+                        channel.send(welcome);
+                        isMessageSent = true;
+                    }
+                });
         }
     
 });
@@ -107,7 +113,7 @@ client.on('message', message =>
 
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
-    const cooldownAmount = (command.cooldown || 3) * 1000;
+    const cooldownAmount = (command.cooldown || 0.5) * 1000;
 
     if(timestamps.has(message.author.id))
     {

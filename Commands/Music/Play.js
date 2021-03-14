@@ -9,7 +9,7 @@ const queue = new Map();
 module.exports =
 {
     name: 'play',
-    aliases: ['skip', 'stop'],
+    aliases: ['skip', 'stop', 'favorite', 'leave'],
     description: 'Play some Music, A music Bot :) ',
     cooldown: 0.5,
     async execute(message, args,client, cmd){
@@ -23,7 +23,7 @@ module.exports =
         if(!Permission.has('CONNECT')) return message.channel.send('you don\'t have the correct permissions');
 
         const serverQueue = queue.get(message.guild.id);
-
+        
         if(cmd === 'play')
         {
             if(!args.length) return message.channel.send('You need to send the second argument');
@@ -87,18 +87,54 @@ module.exports =
             .setFooter('Hope It\'s Katatonia 😬');
             
             return await message.channel.send(songEmbed);
-            }
         }
-        else if(cmd === 'skip') SkipSong(message, serverQueue, message.guild, serverQueue.songs[0]);
-        else if(cmd === 'stop') StopSong(message, serverQueue);
+    }
+    else if(cmd === 'favorite') FavoriteSong(message, args);
+    else if(cmd === 'skip') SkipSong(message, serverQueue, message.guild, serverQueue.songs[0]);
+    else if(cmd === 'stop') StopSong(message, serverQueue);
+    else if(cmd === 'leave') LeaveVoiceChat(message.guild, serverQueue);
+    
+    }
+}
+   
+
+const LeaveVoiceChat = async (guild, serverQueue) => {
+   
+    const songQueue = queue.get(guild.id);
+        
+    try{
+        await songQueue.voiceChannel.leave();
+        queue.delete(guild.id);
+        return;
+    }
+    catch(err){
+        console.error(err, 'Maybe The bot is not in a vc');
+    }
+}
+const FavoriteSong = async (message,args) => {
+
+    if(!args.length) return message.channel.send('You need to send the second argument');
+
+    const membersFavSong = [];
+    let song = {};
+    
+    const memberId = message.author.id;
+    
+    if(ytdl.validateURL(args[0])){
+        const songInfo = await ytdl.getInfo(args[0]);
+        song  = {title: songInfo.videoDetails.title, url: songInfo.videoDetails.video_url };
     }
 
-}
+    membersFavSong.push(song);
+
+    membersFavSong.forEach(song => console.log(song));
+    return await message.reply(`Your favorite song is **${song.title}**`);
+ }
 
 const videoPlayer = async (guild, song) => {
     const byeEmbed = new Discord.MessageEmbed()
-        .setColor('#000000')
-        .setTitle('The party has been stopped 😒, IM OUT FROM HERE 😠');
+    .setColor('#000000')
+    .setTitle('The party has been stopped 😒, IM OUT FROM HERE 😠');
     
     const songQueue = queue.get(guild.id);
     if(!song){
@@ -114,14 +150,13 @@ const videoPlayer = async (guild, song) => {
         songQueue.songs.shift();
         videoPlayer(guild, songQueue.songs[0]);
     }).on("error", error => console.error(error));;
-
+    
     await songQueue.textChannel.send(`🎸🎵 Now playing **${song.title}** 🎸🎵`);
 }
-
 const SkipSong = (message, serverQueue, guild, song) => {
     if(!message.member.voice.channel) return message.channel.send('You need to be in the Channel to execute this command');
     if(!serverQueue) return message.channel.send('There are no song in the queue');
-
+    
     try
     {
         serverQueue.connection.dispatcher.destroy();
@@ -135,7 +170,7 @@ const SkipSong = (message, serverQueue, guild, song) => {
 const StopSong = (message, serverQueue) => {
     if(!message.member.voice.channel) return message.channel.send('You need to be in the Channel to execute this command');
     try{
-
+        
         serverQueue.connection.dispatcher.destroy();
         serverQueue.songs = [];
     }

@@ -1,4 +1,4 @@
-const Embed = require("../Core/Embed");
+const Embed = require("../Core/embed");
 const Discord = require('discord.js');
 
 
@@ -9,7 +9,7 @@ module.exports = {
 	guildOnly: true,
 	cooldown: 0.5,
 	execute(message, args) {
-		if(!message.member.hasPermission('ADMINISTRATOR', 'KICK_MEMBERS')) 
+		if(!message.member.hasPermission('ADMINISTRATOR', 'KICK_MEMBERS') || message.guild.me.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) 
 		{
 			message.reply('You Don\'t have the Permission to kick!');
 			return;

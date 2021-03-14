@@ -69,7 +69,7 @@ client.on('guildMemberAdd', guildMember =>
             console.error('shit\n', error);
         });
     const welcomeChannel = guildMember.guild.channels.cache.find(channel => channel.name === 'welcome'); 
-    const welcome = new Discord.MessageEmbed().setTitle(`Welcome <@${guildMember.user.id}> to our server.`).setTimestamp().setColor('#00ecff');
+    const welcome = new Discord.MessageEmbed().setTitle(`Welcome ${guildMember.user.tag} to our server.`).setTimestamp().setColor('#00ecff');
         if(welcomeChannel){
             welcomeChannel.send(welcome);
         }

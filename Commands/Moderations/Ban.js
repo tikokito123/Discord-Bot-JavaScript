@@ -8,8 +8,8 @@ module.exports = {
 	guildOnly: true,
 	cooldown: 0.5,
 	execute(message, args) {
-		if(!message.member.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) {
-			message.reply('You Don\'t have the Permission to Ban!!!');
+		if(!message.member.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS') || message.guild.me.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) {
+			message.reply('You/me Don\'t have the Permission to Ban!!!');
 			return;
 		};
 

@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 
-const { name } = require("./Help")
+const { name } = require("./help")
 
 module.exports = {
     name: 'display',

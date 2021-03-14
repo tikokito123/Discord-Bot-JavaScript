@@ -4,6 +4,7 @@ module.exports = {
     name: 'reactionRole',
     description: 'setup a reaction role message',
     aliases: ['rr', 'roles'],
+    guildOnly: true,
     async execute(message, args, client){
         console.log('reaction calls');
         const channel = message.guild.channels.cache.get('815250249001074689');        

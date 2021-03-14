@@ -8,10 +8,10 @@ module.exports = {
 	description: 'kick the player want to kick, if you want him to return then use the comeback kick',
 	guildOnly: true,
 	cooldown: 0.5,
-	execute(message, args) {
-		if(!message.member.hasPermission('ADMINISTRATOR', 'KICK_MEMBERS') || message.guild.me.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) 
+	async execute(message, args) {
+		if(!message.member.hasPermission('ADMINISTRATOR', 'KICK_MEMBERS') || !message.guild.me.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) 
 		{
-			message.reply('You Don\'t have the Permission to kick!');
+			message.reply('You/me Don\'t have the Permission to kick!');
 			return;
 		};
 
@@ -20,9 +20,10 @@ module.exports = {
 			const target = message.guild.members.cache.get(user.id);
 			
 			if(args[1] === 'comeback'){
-				const reply = 'סתם נו מה אתה לוקח ללב https://discord.gg/SHwPXdg';
+				let invite = await message.channel.createInvite();
+				const reply = `jk, jk Comeback :). ${invite}`;
 
-				user.send(reply).
+				await user.send(reply).
 				then(() => 
 				{
 					console.log('replied');
@@ -37,8 +38,11 @@ module.exports = {
 			.setURL('https://www.youtube.com/watch?v=dTJFtCG2-xA')
 			.setThumbnail('https://e7.pngegg.com/pngimages/188/405/png-clipart-human-s-middle-finger-emoji-domain-middle-finger-the-finger-emoji-hand-thumb-signal.png')
 			.setFooter('The user can return when he get kicked!');
-			target.kick();
-			message.channel.send(newEmbed);
+			target.kick().then(message.channel.send(newEmbed))
+			.catch(err => {
+				console.error(err, 'could not kick the member');
+				message.channel.send('could not kick the member, this member has the same permission as me');
+			});
 		}
 		else{
 			message.channel.send('You cannot kick that member');

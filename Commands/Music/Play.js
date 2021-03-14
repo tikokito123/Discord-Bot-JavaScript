@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 
 
 const queue = new Map();
+const membersFavSong = new Map();
 
 module.exports =
 {
@@ -12,6 +13,7 @@ module.exports =
     aliases: ['skip', 'stop', 'favorite', 'leave', 'pause', 'resume'],
     description: 'Play some Music, A music Bot :) ',
     cooldown: 0.5,
+    guildOnly: true,
     async execute(message, args,client, cmd){
         
         const voiceChannel = message.member.voice.channel;
@@ -103,7 +105,7 @@ module.exports =
 const LeaveVoiceChat = async (guild, serverQueue) => {
    
     const songQueue = queue.get(guild.id);
-        
+    
     try{
         await songQueue.voiceChannel.leave();
         queue.delete(guild.id);
@@ -111,26 +113,30 @@ const LeaveVoiceChat = async (guild, serverQueue) => {
     }
     catch(err){
         console.error(err, 'Maybe The bot is not in a vc');
+        return;
     }
 }
 const FavoriteSong = async (message,args) => {
 
     if(!args.length) return message.channel.send('You need to send the second argument');
 
-    const membersFavSong = [];
+    membersFavSong
+
     let song = {};
     
     const memberId = message.author.id;
-    
+
     if(ytdl.validateURL(args[0])){
         const songInfo = await ytdl.getInfo(args[0]);
         song  = {title: songInfo.videoDetails.title, url: songInfo.videoDetails.video_url };
+        
+        membersFavSong.push(song);
+      
+        membersFavSong.forEach(fav => console.log(fav));
+      
+        return await message.reply(`Your favorite song is **${song.title}**`);
     }
-
-    membersFavSong.push(song);
-
-    membersFavSong.forEach(song => console.log(song));
-    return await message.reply(`Your favorite song is **${song.title}**`);
+    else return message.reply('please send a valid link!');
  }
 
 const videoPlayer = async (guild, song) => {

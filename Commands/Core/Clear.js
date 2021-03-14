@@ -3,6 +3,7 @@ module.exports = {
     description: 'Clear the chat',
     cooldown: 5,
     aliases: ['c'],
+    guildOnly: true,
     async execute(message, args){
         if(!args[0]) return message.reply('Please enter the amount of messages that you want to clear');
         if(isNaN(args[0])) return message.reply('Please enter a valid number');

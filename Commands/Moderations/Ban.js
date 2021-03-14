@@ -4,11 +4,11 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'ban',
 	aliases: ['b'],
-	description: 'Ban the user',
+	description: 'Ban the user you want to ban',
 	guildOnly: true,
 	cooldown: 0.5,
 	execute(message, args) {
-		if(!message.member.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS') || message.guild.me.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) {
+		if(!message.member.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS') || !message.guild.me.hasPermission('ADMINISTRATOR', 'BAN_MEMBERS')) {
 			message.reply('You/me Don\'t have the Permission to Ban!!!');
 			return;
 		};
@@ -28,7 +28,13 @@ module.exports = {
 				})
 			}
 			const target = message.guild.members.cache.get(user.id);
-			target.ban();
+			target.ban().then(console.log('succeced'))
+			.catch(err => {
+				console.error(err, 'could not ban the member');
+				message.channel.send('could not ban the member, this member has the same permission as me');
+				return;
+			});
+			
 			const newEmbed = new Discord.MessageEmbed()
 			.setColor('#A40000')
 			.setTitle('BANNED!')
@@ -36,6 +42,7 @@ module.exports = {
 			.setURL('https://www.youtube.com/watch?v=dTJFtCG2-xA')
 			.setThumbnail('https://e7.pngegg.com/pngimages/188/405/png-clipart-human-s-middle-finger-emoji-domain-middle-finger-the-finger-emoji-hand-thumb-signal.png')
 			.setFooter('ברוך שפטרנו');
+
 			message.channel.send(newEmbed);
 		}
 		else{

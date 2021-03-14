@@ -3,9 +3,9 @@ module.exports = {
     name: 'liav',
     aliases: ['l'],
     description: 'בוא נשמע בוא נשמע',
-
+    guildOnly: true,
     execute(message, args) {
-        if(message.guild.id !== '497900056972754979') return message.reply('This is a command for a private discord server. To find out, there is an invite: https://discord.gg/GEs36aWK');
+        if(message.guild.id !== '497900056972754979') return message.reply('This is a private command! You cannot use it here.To find out, there is an invite: https://discord.gg/GEs36aWK');  
         
         const replies = ['בוא נשמע אה?! אההה בוא נשמע!', 'איייי די די די די די... חחח בוא נשמע', 'תגיד איך אתה קורא לעצמך אסי נראה לי ערסי', 'האמת שנפגעתי', 'אתה לא מתבייש אנחנו ברחנו מבנות']
         const r = Math.floor(Math.random() * replies.length);

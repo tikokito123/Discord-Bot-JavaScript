@@ -9,7 +9,7 @@ const queue = new Map();
 module.exports =
 {
     name: 'play',
-    aliases: ['skip', 'stop', 'favorite', 'leave'],
+    aliases: ['skip', 'stop', 'favorite', 'leave', 'pause', 'resume'],
     description: 'Play some Music, A music Bot :) ',
     cooldown: 0.5,
     async execute(message, args,client, cmd){
@@ -93,6 +93,8 @@ module.exports =
     else if(cmd === 'skip') SkipSong(message, serverQueue, message.guild, serverQueue.songs[0]);
     else if(cmd === 'stop') StopSong(message, serverQueue);
     else if(cmd === 'leave') LeaveVoiceChat(message.guild, serverQueue);
+    else if(cmd === 'pause') serverQueue.connection.dispatcher.pause();
+    else if(cmd === 'resume') serverQueue.connection.dispatcher.resume();
     
     }
 }

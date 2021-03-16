@@ -10,7 +10,7 @@ const favSongUser = new Map();
 module.exports =
 {
     name: 'play',
-    aliases: ['skip', 'stop', 'favorite', 'leave', 'pause', 'resume', 'pmf'],
+    aliases: ['skip', 'stop', 'favorite', 'leave', 'pause', 'resume', 'pmf', 'q'],
     description: 'Play some Music. A music Bot :) ',
     cooldown: 0.5,
     guildOnly: true,
@@ -20,7 +20,7 @@ module.exports =
 
         const voiceChannel = message.member.voice.channel;
 
-        if(!voiceChannel && cmd !== 'favorite') return message.channel.send('You need to be in the voice channel to play some music');
+        if(!voiceChannel) return message.channel.send('You need to be in the voice channel to play some music');
 
         const Permission = voiceChannel.permissionsFor(message.client.user);
 
@@ -104,11 +104,22 @@ module.exports =
     else if(cmd === 'pause') serverQueue.connection.dispatcher.pause();
     else if(cmd === 'resume') serverQueue.connection.dispatcher.resume();
     else if(cmd === 'pmf') PlayFavoriteSong(message, message.guild, user, serverQueue);
-    
+    else if(cmd === 'q') DisplayQueue(message, serverQueue);
     }
 }
    
+const DisplayQueue = (message, serverQueue) =>{
 
+    if(!serverQueue) return message.reply(`There is no songs in the queue`);
+        const QueueEmbed = new Discord.MessageEmbed()
+        .setTitle('🎵 Songs Queue 🎶');
+
+        serverQueue.songs.forEach(song => {
+            QueueEmbed.addField(`**${song.title}**\n`, `🎸\`${song.title}\`🎶`);
+    });
+    message.channel.send(QueueEmbed);
+    message.channel.send(`Now playing **${serverQueue.songs[0].title}**!`)
+}
 const LeaveVoiceChat = async (guild, serverQueue) => {
    
     const songQueue = queue.get(guild.id);

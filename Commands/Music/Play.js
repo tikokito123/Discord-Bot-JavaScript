@@ -56,7 +56,7 @@ module.exports =
                 }
             }
             
-            if(!serverQueue){
+            if(!serverQueue || serverQueue.songs.length === 0){
                 const queueConstructor = {
                     voiceChannel: voiceChannel,
                     textChannel: message.channel,
@@ -100,7 +100,7 @@ module.exports =
     else if(cmd === 'favorite') FavoriteSong(message, args, user);
     else if(cmd === 'skip') SkipSong(message, serverQueue, message.guild, serverQueue.songs[0]);
     else if(cmd === 'stop') StopSong(message, serverQueue);
-    else if(cmd === 'leave') LeaveVoiceChat(message.guild, serverQueue);
+    else if(cmd === 'leave') LeaveVoiceChat(message.guild);
     else if(cmd === 'pause') serverQueue.connection.dispatcher.pause();
     else if(cmd === 'resume') serverQueue.connection.dispatcher.resume();
     else if(cmd === 'pmf') PlayFavoriteSong(message, message.guild, user, serverQueue);
@@ -109,7 +109,7 @@ module.exports =
 }
    
 const DisplayQueue = (message, serverQueue) =>{
-
+    if(serverQueue.songs.length === 0) return message.channel.send('there is no songs on the queue');
     if(!serverQueue) return message.reply(`There is no songs in the queue`);
         const QueueEmbed = new Discord.MessageEmbed()
         .setTitle('🎵 Songs Queue 🎶');
@@ -118,9 +118,9 @@ const DisplayQueue = (message, serverQueue) =>{
             QueueEmbed.addField(`**${song.title}**\n`, `🎸\`${song.title}\`🎶`);
     });
     message.channel.send(QueueEmbed);
-    message.channel.send(`Now playing **${serverQueue.songs[0].title}**!`)
+    message.channel.send(`**Now playing** \`${serverQueue.songs[0].title}\`**!**`)
 }
-const LeaveVoiceChat = async (guild, serverQueue) => {
+const LeaveVoiceChat = async (guild) => {
    
     const songQueue = queue.get(guild.id);
     
@@ -139,8 +139,8 @@ const FavoriteSong = async (message,args, user) => {
     let song = {};
 
     if(!args.length){
-        if(favSongUser.has(user)){
-            const favsong = favSongUser.get(user);
+        if(favSongUser.has(message.member.id)){
+            const favsong = favSongUser.get(message.member.id);
             return await message.reply(`Your favorite song is **${favsong.title}**`);
         }
         else return message.reply('You need to give a URL of your favorite song');
@@ -167,8 +167,8 @@ const FavoriteSong = async (message,args, user) => {
         }
     }
 
-    if(!user) favSongUser.set(user, song);
-    else favSongUser[user] = song; 
+    if(!user) favSongUser.set(message.member.id, song);
+    else favSongUser[message.member.id] = song; 
     
         
     return await message.reply(`Your favorite song is **${song.title}**`);
@@ -177,8 +177,8 @@ const FavoriteSong = async (message,args, user) => {
 const PlayFavoriteSong = async (message, guild, user, serverQueue) => {
     
     try{
-        if(favSongUser.has(user)){
-            const song = favSongUser.get(user);            
+        if(favSongUser.has(message.member.id)){
+            const song = favSongUser.get(message.member.id);            
             if(serverQueue)
             {
                 const favoriteSongEmbed = new Discord.MessageEmbed()
@@ -245,31 +245,33 @@ const videoPlayer = async (guild, song) => {
     
     await songQueue.textChannel.send(`🎸🎵 Now playing **${song.title}** 🎸🎵`);
 }
-const SkipSong = (message, serverQueue, guild, song) => {
+const SkipSong = async (message, serverQueue, guild) => {
+    
     if(!message.member.voice.channel) return message.channel.send('You need to be in the Channel to execute this command');
-    if(!serverQueue) return message.channel.send('There are no song in the queue');
+    
+    if(serverQueue.songs.length === 0) return await message.channel.send('There are no song in the queue');
     
     try
     {
-        serverQueue.connection.dispatcher.destroy();
-        videoPlayer(guild, song)
+        await serverQueue.connection.dispatcher.destroy();
+                
+        serverQueue.songs.shift();
+        
+        videoPlayer(guild, serverQueue.songs[0]);
     }
     catch(err){
         console.error(err, 'could not skip');
     }    
 }
 
-const StopSong = (message, serverQueue) => {
+const StopSong = async (message, serverQueue) => {
     if(!message.member.voice.channel) return message.channel.send('You need to be in the Channel to execute this command');
     try{
-        serverQueue.connection.dispatcher.destroy();
-        serverQueue.songs = [];
+        await serverQueue.connection.dispatcher.destroy();
+        serverQueue.songs.shift();
+        serverQueue.songs.length = 0;
     }
     catch(err) {
         console.error(err, 'already typed destroyed!');
-    }
-    finally
-    {
-        serverQueue.connection.dispatcher.leave();
     }
 }

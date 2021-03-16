@@ -5,20 +5,22 @@ const Discord = require('discord.js');
 
 
 const queue = new Map();
-const membersFavSong = new Map();
+const favSongUser = new Map();
 
 module.exports =
 {
     name: 'play',
-    aliases: ['skip', 'stop', 'favorite', 'leave', 'pause', 'resume'],
-    description: 'Play some Music, A music Bot :) ',
+    aliases: ['skip', 'stop', 'favorite', 'leave', 'pause', 'resume', 'pmf'],
+    description: 'Play some Music. A music Bot :) ',
     cooldown: 0.5,
     guildOnly: true,
     async execute(message, args,client, cmd){
-        
+
+        const user = favSongUser.get(message.member.id);
+
         const voiceChannel = message.member.voice.channel;
 
-        if(!voiceChannel) return message.channel.send('You need to be in the voice channel to play some music');
+        if(!voiceChannel && cmd !== 'favorite') return message.channel.send('You need to be in the voice channel to play some music');
 
         const Permission = voiceChannel.permissionsFor(message.client.user);
 
@@ -80,23 +82,28 @@ module.exports =
             else
             {
             serverQueue.songs.push(song);
+            const replies = ['Hope It\'s Katatonia 😬', 'Hope It\'s Soen 😬', 'Hope It\'s NF 😬', 'Hope It\'s MOTM 😬', 'Hope It\'s Sleep Token 😬','Hope It\'s Hopsin 😬'];
+            
+            const r = Math.floor(Math.random() * replies.length);
+
             const songEmbed = new Discord.MessageEmbed()
             .setColor('#ff9966')
             .setTitle(`🎶🎶 Song Added! 🎶🎶`)
             .setDescription(`👍🎶🎶 ${song.title} added to your queue 🎶🎶🙂 `)
             .setURL(song.url)
             .setThumbnail('https://nashvilleampexpo.com/wp-content/uploads/2020/08/The-20-Best-Royalty-Free-Music-Sites-in-2018.png')
-            .setFooter('Hope It\'s Katatonia 😬');
+            .setFooter(replies[r]);
             
             return await message.channel.send(songEmbed);
         }
     }
-    else if(cmd === 'favorite') FavoriteSong(message, args);
+    else if(cmd === 'favorite') FavoriteSong(message, args, user);
     else if(cmd === 'skip') SkipSong(message, serverQueue, message.guild, serverQueue.songs[0]);
     else if(cmd === 'stop') StopSong(message, serverQueue);
     else if(cmd === 'leave') LeaveVoiceChat(message.guild, serverQueue);
     else if(cmd === 'pause') serverQueue.connection.dispatcher.pause();
     else if(cmd === 'resume') serverQueue.connection.dispatcher.resume();
+    else if(cmd === 'pmf') PlayFavoriteSong(message, message.guild, user, serverQueue);
     
     }
 }
@@ -116,28 +123,94 @@ const LeaveVoiceChat = async (guild, serverQueue) => {
         return;
     }
 }
-const FavoriteSong = async (message,args) => {
-
-    if(!args.length) return message.channel.send('You need to send the second argument');
-
-    membersFavSong
-
-    let song = {};
+const FavoriteSong = async (message,args, user) => {
     
-    const memberId = message.author.id;
+    let song = {};
 
+    if(!args.length){
+        if(favSongUser.has(user)){
+            const favsong = favSongUser.get(user);
+            return await message.reply(`Your favorite song is **${favsong.title}**`);
+        }
+        else return message.reply('You need to give a URL of your favorite song');
+    }
+        
     if(ytdl.validateURL(args[0])){
         const songInfo = await ytdl.getInfo(args[0]);
         song  = {title: songInfo.videoDetails.title, url: songInfo.videoDetails.video_url };
-        
-        membersFavSong.push(song);
-      
-        membersFavSong.forEach(fav => console.log(fav));
-      
-        return await message.reply(`Your favorite song is **${song.title}**`);
     }
-    else return message.reply('please send a valid link!');
- }
+    else
+    {
+        const videoFinder = async query => 
+        {
+            const videoResult = await ytSearch(query);
+            
+            return (videoResult.videos.length > 1) ? videoResult.videos[0] : null;
+        }
+        const video = await videoFinder(args.join(' '));
+        if(video){
+            song = {title: video.title, url: video.url};
+        }
+        else{
+            message.channel.send('Error finding the video');
+        }
+    }
+
+    if(!user) favSongUser.set(user, song);
+    else favSongUser[user] = song; 
+    
+        
+    return await message.reply(`Your favorite song is **${song.title}**`);
+}
+
+const PlayFavoriteSong = async (message, guild, user, serverQueue) => {
+    
+    try{
+        if(favSongUser.has(user)){
+            const song = favSongUser.get(user);            
+            if(serverQueue)
+            {
+                const favoriteSongEmbed = new Discord.MessageEmbed()
+                .setTitle(`🎹 Hold up Hold Up, ${message.member.user.username} Wants us to listen to his favorite song 😎`)
+                .setColor('#3870ab')
+                .setDescription(`Your **🎶favorite song🎶** just added to the queue! 🎸🎵\n
+                The name of your favorite song is:**🎸🎵 ${song.title}🎶🎹**`)
+                serverQueue.songs.push(song);
+                await message.channel.send(favoriteSongEmbed);  
+            }
+            else
+            {
+                const voiceChannel = message.member.voice.channel;
+                const queueConstructor = {
+                    voiceChannel: voiceChannel,
+                    textChannel: message.channel,
+                    connection: null,
+                    songs: [],
+                    playing: true
+                }
+                queue.set(guild.id, queueConstructor);
+                queueConstructor.songs.push(song);
+                
+                try{
+                    const connection = await voiceChannel.join();
+                    queueConstructor.connection = connection;
+                    await videoPlayer(message.guild, queueConstructor.songs[0]);
+                    
+                }
+                catch(err){
+                    queue.delete(message.guild.id);
+                    message.channel.send('Error Connection');
+                    throw err;
+                }
+            }
+        }
+        else message.reply('enter your favorite song first!');
+    }
+    catch(err){
+        console.error(err, 'could not play fav song');
+    }
+}
+
 
 const videoPlayer = async (guild, song) => {
     const byeEmbed = new Discord.MessageEmbed()
@@ -178,11 +251,14 @@ const SkipSong = (message, serverQueue, guild, song) => {
 const StopSong = (message, serverQueue) => {
     if(!message.member.voice.channel) return message.channel.send('You need to be in the Channel to execute this command');
     try{
-        
         serverQueue.connection.dispatcher.destroy();
         serverQueue.songs = [];
     }
     catch(err) {
         console.error(err, 'already typed destroyed!');
+    }
+    finally
+    {
+        serverQueue.connection.dispatcher.leave();
     }
 }

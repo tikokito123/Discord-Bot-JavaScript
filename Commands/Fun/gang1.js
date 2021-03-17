@@ -1,7 +1,6 @@
 module.exports = {
     name: 'gang1',
-    aliases: ['sb', 'g1'],
-    description: 'לאמיר נמאס לנשום',
+    aliases: ['agl', 'g1', 'gl', 'la'],
     guildOnly: true,
     execute(message, args){
         if(message.guild.id !== '497900056972754979') return message.channel.send('you cannot use it here.');

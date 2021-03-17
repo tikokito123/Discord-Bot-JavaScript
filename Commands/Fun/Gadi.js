@@ -3,11 +3,10 @@ module.exports =
     //this is a private command
     name: 'gadi',
     aliases: ['g'],
-    description: 'אתה בסדר אתה',
     cooldown: 0,
     guildOnly: true,
     async execute(message, args){
-        if(message.guild.id !== '497900056972754979') return message.reply('This is a private command! You cannot use it here.To find out, there is an invite: https://discord.gg/GEs36aWK');  
+        if(message.guild.id !== '497900056972754979') return message.reply('This is a private command! You cannot use it here.');  
         
         const gadi = message.guild.members.cache.get('284228138995810304');
         const replies = ['גבר גבר גבר', 'בקבה נודר את גדי דוקר', ` אתה הומו`, 'אני לא מוכן לבדיחות הקיצוניות שלך. ערב טוב.', 'לא אני שמתי לב', 'אתה בסדר אתה']

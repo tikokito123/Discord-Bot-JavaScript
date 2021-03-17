@@ -2,7 +2,6 @@ module.exports = {
    
     name: 'liav',
     aliases: ['l'],
-    description: 'בוא נשמע בוא נשמע',
     guildOnly: true,
     execute(message, args) {
         if(message.guild.id !== '497900056972754979') return message.reply('This is a private command! You cannot use it here.To find out, there is an invite: https://discord.gg/GEs36aWK');  

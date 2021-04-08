@@ -7,9 +7,20 @@ const { prefix, token } = require('./config.json');
 const client = new Discord.Client({partials: ['MESSAGE', 'CHANNEL', 'REACTION']});
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
+const mongo = require('./Commands/Core/mongo')
 const commandFolders = fs.readdirSync('./Commands');
 //login to discord
-client.on('ready', () => console.log('On'));
+client.on('ready',async () => {
+    await mongo().then(mongoose => {
+        try{
+            console.log('connected!');
+        } finally{
+            mongoose.connection.close();
+        }
+    })
+
+    console.log('On');
+});
 
 client.login(token);
 

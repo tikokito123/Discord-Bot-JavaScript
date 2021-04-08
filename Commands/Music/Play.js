@@ -1,11 +1,14 @@
 const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
+const mongo = require('../Core/mongo');
+const favoriteSongSchema = require('../database/schema');
 
 const Discord = require('discord.js');
 
 
 const queue = new Map();
-const favSongUser = new Map();
+
+const cache = {};
 
 module.exports =
 {
@@ -15,9 +18,7 @@ module.exports =
     cooldown: 0.5,
     guildOnly: true,
     async execute(message, args,client, cmd){
-
-        const user = favSongUser.get(message.member.id);
-
+        
         const voiceChannel = message.member.voice.channel;
 
         if(!voiceChannel) return message.channel.send('You need to be in the voice channel to play some music');
@@ -135,54 +136,102 @@ const LeaveVoiceChat = async (guild) => {
     }
 }
 const FavoriteSong = async (message,args) => {
-    
+
     let song = {};
 
-    if(!args.length){
-        if(favSongUser.has(message.member.id)){
-            console.log('here');
-            const favsong = favSongUser.get(message.member.id);
-            return await message.reply(`Your favorite song is **${favsong.title}**`);
-        }
-        else return message.reply('You need to give a URL of your favorite song');
-    }
-        
-    if(ytdl.validateURL(args[0])){
-        const songInfo = await ytdl.getInfo(args[0]);
-        song  = {title: songInfo.videoDetails.title, url: songInfo.videoDetails.video_url };
-    }
-    else
-    {
-        const videoFinder = async query => 
-        {
-            const videoResult = await ytSearch(query);
-            
-            return (videoResult.videos.length > 1) ? videoResult.videos[0] : null;
-        }
-        const video = await videoFinder(args.join(' '));
-        if(video){
-            song = {title: video.title, url: video.url};
-        }
-        else{
-            message.channel.send('Error finding the video');
-        }
-    }
-    if(!favSongUser.get(message.member.id)) favSongUser.set(message.member.id, song);
-    else favSongUser[message.member.id] = song; 
     
-    
-        
-    return await message.reply(`Your favorite song is **${song.title}**`);
-}
+    if(!args.length)  {
+        console.log('here');
+        mongo().then(async m => {
+                    try{
+                    const result = await favoriteSongSchema.findOne({ _id: message.author.id })
+                    const favsong = result.song.title;
+                    return await message.reply(`Your favorite song is **${favsong}**`);
+                }
+                catch(e){ return console.log('Cannot find favsong'); } 
+                finally{
+                    m.connection.close();
+                }
+            }).catch(error => {
+                return console.log(error);
+            });
+    }
+    else{
 
+        if(ytdl.validateURL(args[0])){
+            const songInfo = await ytdl.getInfo(args[0]);
+            song  = {title: songInfo.videoDetails.title, url: songInfo.videoDetails.video_url };
+        }
+        else
+        {
+            const videoFinder = async query => 
+            {
+                const videoResult = await ytSearch(query);
+                
+                return (videoResult.videos.length > 1) ? videoResult.videos[0] : null;
+            }
+            const video = await videoFinder(args.join(' '));
+            if(video){
+                song = {title: video.title, url: video.url};
+            }
+            else{
+                message.channel.send('Error finding the video');
+            }
+        }
+        
+        
+        await mongo().then(async m => {
+            try{
+                await favoriteSongSchema.findOneAndUpdate({
+                    _id: message.author.id
+                }, 
+                {
+                    _id: message.author.id,
+                    song: song
+                }, 
+                {
+                    upsert: true
+                });
+                
+            }
+            finally{
+                m.connection.close();
+            }
+        })
+        return await message.reply(`Your favorite song is **${song.title}**`);
+    }
+}
+    
+    
+    
 const PlayFavoriteSong = async (message, guild, serverQueue) => {
     
+    
+    let data;
+    
+    if(!data){
+        await mongo().then(async m => {
+            try{
+                console.log('fetching from database');
+
+                const result = await favoriteSongSchema.findOne({ _id: message.author.id })
+
+                data = result.song;
+            }
+            finally
+            {
+                m.connection.close();
+            }
+        })
+    }
+
     try{
-        if(favSongUser.has(message.member.id)){
+        if(data){
+            console.log(data);
+
             if(serverQueue)
             {
-                const song = favSongUser.get(message.member.id);
-                console.log(favSongUser.size);
+                const song = data;
                 const favoriteSongEmbed = new Discord.MessageEmbed()
                 .setTitle(`🎹 Hold up Hold Up, ${message.member.user.username} Wants us to listen to his favorite song 😎`)
                 .setColor('#3870ab')
@@ -203,7 +252,7 @@ const PlayFavoriteSong = async (message, guild, serverQueue) => {
                     playing: true
                 }
                 queue.set(guild.id, queueConstructor);
-                queueConstructor.songs.push(favSongUser.get(message.member.id));
+                queueConstructor.songs.push(data);
                 
                 try{
                     const connection = await voiceChannel.join();

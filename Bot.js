@@ -77,7 +77,7 @@ client.on('guildMemberAdd', guildMember =>
         guildMember.roles.add(welcomeRole).then(() => {
             console.log('success');
         }).catch(error => {
-            console.error('shit\n', error);
+            console.error(error);
         });
     const welcomeChannel = guildMember.guild.channels.cache.find(channel => channel.name === 'welcome'); 
     const welcome = new Discord.MessageEmbed().setTitle(`Welcome ${guildMember.user.tag} to our server.`).setTimestamp().setColor('#00ecff');

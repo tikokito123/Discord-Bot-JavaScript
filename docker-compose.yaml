@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+  db: 
+    image: mongo
+    volumes:
+      - ~/mongo/data:/data/db

@@ -11,13 +11,13 @@ const mongo = require('./Commands/Core/mongo')
 const commandFolders = fs.readdirSync('./Commands');
 //login to discord
 client.on('ready',async () => {
-    await mongo().then(mongoose => {
-        try{
-            console.log('connected!');
-        } finally{
-            mongoose.connection.close();
-        }
-    })
+    // await mongo().then(mongoose => {
+    //     try{
+    //         console.log('connected!');
+    //     } finally{
+    //         mongoose.connection.close();
+    //     }
+    // })
 
     console.log('On');
 });
@@ -138,6 +138,12 @@ client.on('message', message =>
     }
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+
+
+    process.on('uncaughtException', (err) => {
+        console.error(err);
+        console.log("Node NOT Exiting...");
+      });
 
     try
     {

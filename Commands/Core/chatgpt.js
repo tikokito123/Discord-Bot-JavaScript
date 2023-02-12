@@ -1,5 +1,5 @@
 module.exports = {
-  name: '',
+  name: 'chatgpt',
   description: 'chatgpt is here for your service',
   cooldown: 0,
   aliases: ['gpt'],

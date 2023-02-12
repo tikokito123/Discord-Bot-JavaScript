@@ -2,22 +2,41 @@
 const replies = [ 'Hello world', 'Nice to meet you guys', 'I Speak English very very', 'I am working'] 
 const fs = require('fs');
 const Discord = require('discord.js');
+// const {GatewayIntentBits} = require('discord.js');
 const { prefix, token } = require('./config.json');
 
-const client = new Discord.Client({partials: ['MESSAGE', 'CHANNEL', 'REACTION']});
+const client = new Discord.Client({
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+    // intents:[
+    //     GatewayIntentBits.Guilds,
+    //     GatewayIntentBits.GuildMessages 
+    // ]
+});;
+
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
+
 const mongo = require('./Commands/Core/mongo')
 const commandFolders = fs.readdirSync('./Commands');
 //login to discord
+
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isChatInputCommand()) return;
+  
+    if (interaction.commandName === 'ping') {
+      await interaction.reply('Pong!');
+    }
+});
+
 client.on('ready',async () => {
-    // await mongo().then(mongoose => {
-    //     try{
-    //         console.log('connected!');
-    //     } finally{
-    //         mongoose.connection.close();
-    //     }
-    // })
+    await mongo().then(mongoose => {
+        try{
+            console.log(`connected! ${client.user.tag}`);
+        } finally{
+            mongoose.connection.close();
+        }
+    })
 
     console.log('On');
 });
@@ -100,9 +119,9 @@ client.on('guildMemberAdd', guildMember =>
 
 client.on('message', message =>
 {
+    console.log(message.content);
     //check if the user wants to contact with the bot...
     if (!message.content.startsWith(prefix) || message.author.bot) return;
-    
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
     

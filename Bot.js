@@ -119,7 +119,6 @@ client.on('guildMemberAdd', guildMember =>
 
 client.on('message', message =>
 {
-    console.log(message.content);
     //check if the user wants to contact with the bot...
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/);

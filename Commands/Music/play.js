@@ -8,7 +8,7 @@ const Discord = require('discord.js');
 
 const queue = new Map();
 
-const cache = {};
+
 
 module.exports =
 {

@@ -2,8 +2,11 @@
 const replies = [ 'Hello world', 'Nice to meet you guys', 'I Speak English very very', 'I am working'] 
 const fs = require('fs');
 const Discord = require('discord.js');
+require("dotenv").config();
 // const {GatewayIntentBits} = require('discord.js');
-const { prefix, token } = require('./config.json');
+// const { prefix, token } = require('./config.json');
+const TOKEN = process.env.TOKEN;
+const PREFIX = process.env.PREFIX;
 
 const client = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -41,7 +44,7 @@ client.on('ready',async () => {
     console.log('On');
 });
 
-client.login(token);
+client.login(TOKEN);
 
 //Looking for the particular folder with the command name that the user has been given...
 for (const folder of commandFolders) 
@@ -68,14 +71,14 @@ client.on('guildCreate', guild =>
     .setTitle('TikoBot is HERE!! 😎')
     .setURL('https://discord.com/oauth2/authorize?client_id=812915358847074304&permissions=8&scope=bot')
     .setDescription('So, What I can do?')
-    .addFields({name: `My prefix: ${prefix}`, value: `Use ${prefix} when you want to call me`},
+    .addFields({name: `My PREFIX: ${PREFIX}`, value: `Use ${PREFIX} when you want to call me`},
     {name: `🎸Play Some Music🎶`, value: `Play your favorite songs with TikoBot`},
     {name: '🤣Say Funny jokes🤣', value: `Wanna laugth`},
     {name: '🖕Kick🖕', value: `You know there is an easter egg in the kick command 🤫`},
     {name: '🖕Ban🖕', value: 'Suggestion: If there is someone names Meliodas in your server'},
     {name: '🔴Do some Reaction roles🔴', value: `Choose the role you like`},
     {name: 'clear your channels 💪', value: `clear your text channel`},
-    ).addField(`For the commands list type ${prefix}help`, `Help! Help!!`)
+    ).addField(`For the commands list type ${PREFIX}help`, `Help! Help!!`)
     .setFooter('Invite me to your server');
 
 
@@ -120,8 +123,8 @@ client.on('guildMemberAdd', guildMember =>
 client.on('message', message =>
 {
     //check if the user wants to contact with the bot...
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    if (!message.content.startsWith(PREFIX) || message.author.bot) return;
+    const args = message.content.slice(PREFIX.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
     
     

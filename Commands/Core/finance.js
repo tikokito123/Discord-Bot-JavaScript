@@ -7,7 +7,7 @@ module.exports = {
   aliases: ["symbol", "market", "mkt", "ts"],
   guildOnly: true,
   async execute(message, args, client, cmd) {
-    const { alphaVantageKey } = require("../../config.json");
+    const alphaVantageKey  = process.env.alphaVantageKey;
     const request = require("request");
     const stockSymbol = args[0]; // the symbol of the stock you want to retrieve data for
     if (!args) return message.reply("please give me a symbol");

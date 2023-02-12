@@ -1,5 +1,6 @@
-const {prefix} = require('../../config.json');
-
+// const {prefix} = require('../../config.json');
+const PREFIX = process.env.PREFIX;
+require("dotenv").config()
 module.exports = 
 {
     name: 'help',
@@ -15,7 +16,7 @@ module.exports =
         {
             data.push('Here\'s a list of all the commands');
             data.push(commands.map(command => command.name).join(', '));
-            data.push(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command`);
+            data.push(`\nYou can send \`${PREFIX}help [command name]\` to get info on a specific command`);
             return message.author.send(data, {split: true}).
             then(() => 
             {
@@ -36,7 +37,7 @@ module.exports =
 
         if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
         if (command.description) data.push(`**Description:** ${command.description}`);
-        if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
+        if (command.usage) data.push(`**Usage:** ${PREFIX}${command.name} ${command.usage}`);
         
         data.push(`Cooldown: ${command.cooldown || 0.5} second(s)`);
 

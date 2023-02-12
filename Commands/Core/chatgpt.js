@@ -5,7 +5,7 @@ module.exports = {
   aliases: ['gpt'],
   guildOnly: true,
   async execute(message, args) {
-    const { openAiKey } = require('../../config.json')
+    const openAiKey  = process.env.openAiKey
     const axios = require("axios");
 
     

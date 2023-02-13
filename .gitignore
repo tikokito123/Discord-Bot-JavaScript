@@ -5,10 +5,10 @@ Commands/Fun
 .env
 # Log file
 *.log
-
+/infra/k8s/tikobot/charts
 # BlueJ files
 *.ctxt
-
+gcloud-creds.json
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 

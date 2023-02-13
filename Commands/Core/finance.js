@@ -44,7 +44,12 @@ module.exports = {
                     newEmbed.addField(key, symbolData[key]);
                 }
               }
-              symbolData["05. price"] >= symbolData["02. open"] ? newEmbed.setColor("1BFF00") : newEmbed.setColor("FF0000")
+              try{
+                symbolData["05. price"] >= symbolData["02. open"] ? newEmbed.setColor("1BFF00") : newEmbed.setColor("FF0000")
+              }
+              catch(e) {
+                console.error(e);
+              }
 
               message.channel.send(newEmbed);
             } 

@@ -25,6 +25,6 @@ jobs:
     - name: Build TikoBot production
       run: |
         ls -la
-        docker build . --file Dockerfile --tag tikobot:latest
+        docker build . --tag tikobot:latest
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker push

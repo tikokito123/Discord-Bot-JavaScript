@@ -19,13 +19,14 @@ jobs:
       alphaVantageKey: ${{ secrets.ALPHAVANTAGEKEY }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      TAG: tikokito/tikobot
+      VERSION: latest
 
     steps:
     - uses: actions/checkout@v3
     - name: Build TikoBot production
       run: |
-        export TAG=tikobot:latest
         ls -la
-        docker build . --tag $TAG
+        docker build . --tag $TAG:$VERSION
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker push $TAG
+        docker push $TAG:$VERSION
